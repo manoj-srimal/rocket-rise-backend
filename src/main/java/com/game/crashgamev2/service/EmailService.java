@@ -3,21 +3,25 @@ package com.game.crashgamev2.service;
 import com.game.crashgamev2.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
-@RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Value("${frontend.base.url}")
+    private String frontendBaseUrl;
 
     public void sendVerificationEmail(User user, String token) {
         String recipientAddress = user.getEmail();
         String subject = "Crash Game - Account Verification";
-        String confirmationUrl = "http://localhost:3000/verify-email?token=" + token;
+        String confirmationUrl = frontendBaseUrl + "/verify-email?token=" + token;
 
         // --- HTML Email Content එක ---
         String htmlContent = "<div style='font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;'>"
