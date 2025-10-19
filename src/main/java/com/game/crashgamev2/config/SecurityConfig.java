@@ -55,25 +55,20 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // --- 1. CORS Pre-flight Requests වලට හැමවිටම අවසර දෙනවා ---
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // --- 2. Public Endpoints ---
                         .requestMatchers("/api/auth/**", "/ws/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/payment-methods").permitAll()
 
-                        // --- 3. SUPER_ADMIN ට පමණක් අදාළ, විශේෂිතම Rules ---
                         .requestMatchers(HttpMethod.PUT, "/api/admin/users/*/role").hasRole("SUPER_ADMIN")
                         .requestMatchers("/api/admin/signals").hasRole("SUPER_ADMIN")
 
-                        // --- 4. ADMIN සහ SUPER_ADMIN ට අදාළ පොදු Rules ---
                         .requestMatchers(HttpMethod.GET, "/api/payment-methods/all").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/payment-methods").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/payment-methods/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/payment-methods/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
 
-                        // --- 5. ඉතිරි සියල්ලම Authenticate විය යුතුයි ---
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
