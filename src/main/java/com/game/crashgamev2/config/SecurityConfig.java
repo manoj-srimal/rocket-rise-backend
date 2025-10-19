@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.http.HttpMethod;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,15 +55,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // 1. Public Endpoints: Login
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         .requestMatchers("/api/auth/**", "/ws/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/payment-methods").permitAll()
 
-                        // 2. SUPER_ADMIN
                         .requestMatchers(HttpMethod.PUT, "/api/admin/users/*/role").hasRole("SUPER_ADMIN")
                         .requestMatchers("/api/admin/signals").hasRole("SUPER_ADMIN")
 
-                        // 3. ADMIN and SUPER_ADMIN
                         .requestMatchers("/api/payment-methods/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
 
